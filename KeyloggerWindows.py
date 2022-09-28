@@ -363,7 +363,7 @@ def SendLog():
         receiver_email = ["eneboltest@zohomail.com"]  # MultiEmail
 
         # Send every 2 hours approx
-        for x in range(720):  # 720
+        for x in range(360):  # 720
             time.sleep(10)  # *10
             print("Pass: " + str(x*10))
 
